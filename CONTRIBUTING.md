@@ -75,9 +75,11 @@ Using AI tools is not prohibited, but the following applies:
 Releases are built by [dist](https://github.com/axodotdev/cargo-dist) from `dist-workspace.toml`. To release:
 
 1. Set the version in `Cargo.toml` and commit it to the default branch.
-2. Tag the commit `v<version>`, such as `v0.1.0`, and push the tag.
+2. In the Actions tab, run the Release workflow on the default branch with the tag `v<version>`, such as `v0.1.1`.
 
-The Release workflow builds VCam CLI for macOS, Linux, and Windows, attaches the archives and the installers to a GitHub release, and updates the `vcam-cli` formula in [vcamapp/homebrew-tap](https://github.com/vcamapp/homebrew-tap). It needs a `HOMEBREW_TAP_TOKEN` secret that can push to the tap. Run `dist generate` after changing `dist-workspace.toml`, and check what a release will contain with `dist plan`.
+The Release workflow builds VCam CLI for macOS, Linux, and Windows. Only after every build has passed does it create the tag and a GitHub release with the archives and the installers, and update the `vcam-cli` formula in [vcamapp/homebrew-tap](https://github.com/vcamapp/homebrew-tap). A failed build leaves no tag behind, so fix it and run the workflow again. If a later step fails, such as updating the tap, re-run the failed jobs instead of creating the tag again. Running the workflow with the tag `dry-run` builds everything without releasing.
+
+Updating the tap needs a `HOMEBREW_TAP_TOKEN` secret that can push to the tap. Run `dist generate` after changing `dist-workspace.toml`, and check what a release will contain with `dist plan`.
 
 ## License
 

@@ -22,3 +22,5 @@ tap = "vcamapp/homebrew-tap"
 # Homebrew already has an unrelated cask named "vcam"
 formula = "vcam-cli"
 publish-jobs = ["homebrew"]
+# Releases run from the Actions tab and create the tag only after every build has passed
+dispatch-releases = true
