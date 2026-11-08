@@ -71,7 +71,7 @@ vcam events motion.started motion.stopped
 Add VCam CLI as an MCP server in your client. For Claude Code:
 
 ```sh
-claude mcp add vcam -- vcam mcp
+claude mcp add --scope user vcam -- vcam mcp
 ```
 
 For clients configured with JSON:
