@@ -1,0 +1,28 @@
+name: Proposal
+description: Propose a new feature or a change before writing a pull request
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Agree on the approach here before you open a pull request for anything larger than a bug fix, a typo fix or a minor suggestion. See CONTRIBUTING.md.
+
+        VCam CLI only passes calls to the VCam API. Requests for things VCam itself should do belong to [VCam](https://github.com/vcamapp/app/issues), not here.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What you cannot do now, and why it matters to you
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What you would change, and how you would split it if it does not fit in one pull request
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

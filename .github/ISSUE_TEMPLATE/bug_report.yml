@@ -1,0 +1,36 @@
+name: Bug report
+description: A command or an MCP tool fails, or does not do what you expect
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not paste your VCAM_TOKEN. Check that screenshots and captured frames show nothing you would not share.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected and what happened instead
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and output
+      description: The command you ran, or the MCP client and the tool call, with the full output. Adding `--json` shows the error code.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: versions
+    attributes:
+      label: Versions
+      description: Run `vcam --version` and `vcam app.getInfo`
+      value: |
+        - VCam CLI:
+        - VCam app and its apiVersion:
+        - OS of the computer running VCam CLI:
+        - Connected to VCam on the same computer or another device:
+        - MCP client (if used):
+    validations:
+      required: true
