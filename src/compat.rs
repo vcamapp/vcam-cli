@@ -75,6 +75,7 @@ mod tests {
     fn older() -> Spec {
         let mut document: Value =
             serde_json::from_str(include_str!("../spec/openrpc.json")).unwrap();
+        document["info"]["version"] = json!("0.1.0");
         let methods = document["methods"].as_array_mut().unwrap();
         methods.retain(|m| m["name"] != "scene.rename" && m["name"] != "motion.started");
         for method in methods.iter_mut().filter(|m| m["name"] == "scene.load") {
