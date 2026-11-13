@@ -409,10 +409,10 @@
       "params": [
         {
           "name": "motionId",
-          "required": true,
           "schema": {
             "type": "string"
-          }
+          },
+          "description": "The motion to stop. Omit to stop every playing motion."
         }
       ],
       "result": {
