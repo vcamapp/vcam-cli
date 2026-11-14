@@ -122,8 +122,7 @@ pub async fn call(endpoint: &Endpoint, args: Vec<String>, mut output: Output) ->
         output.print(&result);
         return Ok(());
     }
-    Err(compat::missing_name(&spec, &Spec::bundled(), name)
-        .unwrap_or_else(|| unknown_method(&spec, name)))
+    Err(compat::missing_name(&spec, &known, name).unwrap_or_else(|| unknown_method(&spec, name)))
 }
 
 fn unknown_method(spec: &Spec, name: &str) -> Error {
@@ -165,11 +164,9 @@ fn capture_format(path: &Path) -> &'static str {
 }
 
 fn save_capture(mut result: Value, path: &Path) -> Result<Value, Error> {
-    let data = result
-        .as_object_mut()
-        .and_then(|r| r.remove("data"))
-        .and_then(|d| d.as_str().map(str::to_owned))
-        .ok_or_else(|| Error::Io("frame.capture returned no image".into()))?;
+    let Some(Value::String(data)) = result.as_object_mut().and_then(|r| r.remove("data")) else {
+        return Err(Error::Io("frame.capture returned no image".into()));
+    };
     let bytes = base64::engine::general_purpose::STANDARD
         .decode(data)
         .map_err(|e| Error::Io(format!("frame.capture returned an invalid image: {e}")))?;

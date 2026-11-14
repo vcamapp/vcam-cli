@@ -172,20 +172,25 @@ impl Connection {
     }
 }
 
-fn dispatch(value: Value, pending: &Mutex<Pending>, events: &mpsc::UnboundedSender<Event>) {
+fn dispatch(mut value: Value, pending: &Mutex<Pending>, events: &mpsc::UnboundedSender<Event>) {
     if let Some(id) = value.get("id").and_then(Value::as_u64) {
         let reply = match value.get("error") {
             Some(error) => Err(Error::from_rpc(error)),
-            None => Ok(value.get("result").cloned().unwrap_or(Value::Null)),
+            None => Ok(value
+                .get_mut("result")
+                .map(Value::take)
+                .unwrap_or(Value::Null)),
         };
         if let Some(sender) = pending.lock().unwrap().replies.remove(&id) {
             let _ = sender.send(reply);
         }
     } else if let Some(method) = value.get("method").and_then(Value::as_str) {
-        let _ = events.send(Event {
-            method: method.to_owned(),
-            params: value.get("params").cloned().unwrap_or(Value::Null),
-        });
+        let method = method.to_owned();
+        let params = value
+            .get_mut("params")
+            .map(Value::take)
+            .unwrap_or(Value::Null);
+        let _ = events.send(Event { method, params });
     }
 }
 

@@ -35,17 +35,8 @@ Controls VCam, the virtual camera app with an avatar, through the VCam API.
 
 pub async fn serve(endpoint: Endpoint, prefixes: Vec<String>) -> Result<(), Error> {
     let server = VCamServer {
-        state: Arc::new(State {
-            endpoint,
-            prefixes,
-            connection: tokio::sync::Mutex::new(None),
-            tools: RwLock::new(Vec::new()),
-            events: Mutex::new(VecDeque::new()),
-            event_arrived: Notify::new(),
-            peer: Mutex::new(None),
-        }),
+        state: Arc::new(State::new(endpoint, prefixes)),
     };
-    server.state.set_spec(&Spec::bundled());
     let running = server
         .serve(rmcp::transport::stdio())
         .await
@@ -73,6 +64,21 @@ struct State {
 }
 
 impl State {
+    /// Starts with the bundled spec's tools so they can be listed before VCam is reachable
+    fn new(endpoint: Endpoint, prefixes: Vec<String>) -> Self {
+        let state = Self {
+            endpoint,
+            prefixes,
+            connection: tokio::sync::Mutex::new(None),
+            tools: RwLock::new(Vec::new()),
+            events: Mutex::new(VecDeque::new()),
+            event_arrived: Notify::new(),
+            peer: Mutex::new(None),
+        };
+        state.set_spec(&Spec::bundled());
+        state
+    }
+
     /// Returns true when the tools changed
     fn set_spec(&self, spec: &Spec) -> bool {
         let tools = tool_definitions(spec, &self.prefixes);
@@ -306,21 +312,12 @@ mod tests {
     use crate::testing::FakeServer;
 
     async fn state_with(server: &FakeServer) -> Arc<State> {
-        let state = Arc::new(State {
-            endpoint: Endpoint {
-                host: "127.0.0.1".into(),
-                port: server.port,
-                token: None,
-            },
-            prefixes: Vec::new(),
-            connection: tokio::sync::Mutex::new(None),
-            tools: RwLock::new(Vec::new()),
-            events: Mutex::new(VecDeque::new()),
-            event_arrived: Notify::new(),
-            peer: Mutex::new(None),
-        });
-        state.set_spec(&Spec::bundled());
-        state
+        let endpoint = Endpoint {
+            host: "127.0.0.1".into(),
+            port: server.port,
+            token: None,
+        };
+        Arc::new(State::new(endpoint, Vec::new()))
     }
 
     fn discover_and(
